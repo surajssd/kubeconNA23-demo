@@ -1,4 +1,4 @@
-# Deploying Encrypted Container Images with Cloud API Adatpor
+# Deploying Encrypted Container Images with Cloud API Adaptor
 
 ## Encrypt Image
 
@@ -11,26 +11,43 @@ head -c 32 /dev/urandom | openssl enc >"$KEY_FILE"
 
 ### Encrypt Image
 
-Here we will use an existing `busybox` image encrypt it with the previously created key and upload it to a new destination.
+Here we will use an existing `busybox` image, encrypt it with the previously created key and upload it to a new destination.
 
 ```bash
 export SOURCE_IMAGE=busybox
-export DESTINATION_IMAGE=quay.io/surajd/busybox-encrypted:$(date '+%Y-%m-%b-%d-%H-%M-%S')
+export QUAY_USERID=REPLACE_ME
+export DESTINATION_IMAGE=quay.io/${QUAY_USERID}/busybox-encrypted:$(date '+%Y-%m-%b-%d-%H-%M-%S')
 export KEY_ID="default/image-decryption-keys/key.bin"
 make encrypt-image
 ```
 
-## Deploy KBS
+## Deploy Infrastructure
+
+### Deploy AKS
+
+```bash
+export AZURE_RESOURCE_GROUP=REPLACE_ME
+export SSH_KEY=REPLACE_ME
+make deploy-aks
+```
+
+Based on the output of the above command run:
+
+```bash
+export CLUSTER_SPECIFIC_DNS_ZONE=REPLACE_ME
+```
+
 
 ### Deploy KBS with Image Encryption / Decryption Symmetric Key
 
 ```bash
-echo export CLUSTER_SPECIFIC_DNS_ZONE=$(az aks show \
-    --resource-group "${AZURE_RESOURCE_GROUP}" \
-    --name "${CLUSTER_NAME}" \
-    --query addonProfiles.httpApplicationRouting.config.HTTPApplicationRoutingZoneName -otsv)
-
 make deploy-kbs
+```
+
+### Deploy CAA
+
+```bash
+make deploy-caa
 ```
 
 ## Deploy Application with Encrypted Image
