@@ -109,7 +109,35 @@ EOF
 
 cp $SSH_KEY install/overlays/azure/id_rsa.pub
 export CLOUD_PROVIDER=azure
-make deploy
+
+# Install operator
+# Clone operator repository
+# Pull the CAA code
+if [ ! -d operator ]; then
+  git clone https://github.com/confidential-containers/operator
+fi
+
+pushd operator
+
+pushd config/manager
+kustomize edit set image controller=quay.io/confidential-containers/operator@sha256:4131275630cf95727f75e72eb301a459b3a5e596bdc3c8bb668812d7bbae74a1
+popd
+
+kubectl apply -k config/default
+
+pushd config/samples/ccruntime/peer-pods
+kustomize edit set image quay.io/confidential-containers/reqs-payload=quay.io/confidential-containers/reqs-payload:e45d4e84c3ce4ae116f3f4d6c123c4829606026f
+kustomize edit set image quay.io/confidential-containers/runtime-payload=quay.io/confidential-containers/runtime-payload-ci:kata-containers-7ee7ca2b31915a6e4ad54dbe61b2c06dee24e598
+popd
+
+kubectl apply -k config/samples/ccruntime/peer-pods
+popd
+
+# Install CAA
+kubectl apply -k install/overlays/${CLOUD_PROVIDER}
+
+# Now the operator will start installing components
+kubectl label nodes --all node.kubernetes.io/worker=
 
 # Wait until the runtimeclass is created
 for i in {1..20}; do
