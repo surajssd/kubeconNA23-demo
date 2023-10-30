@@ -16,7 +16,8 @@ CLUSTER_NAME="${CLUSTER_NAME:-caaEncryptedImages}"
 AZURE_SUBSCRIPTION_ID=$(az account show --query id --output tsv)
 AKS_RG="${AZURE_RESOURCE_GROUP}-aks"
 registry="quay.io/confidential-containers"
-AZURE_IMAGE_ID="/CommunityGalleries/cocopodvm-d0e4f35f-5530-4b9c-8596-112487cdea85/Images/podvm_image0/Versions/$(date -v -1d "+%Y.%m.%d" 2>/dev/null || date -d "yesterday" "+%Y.%m.%d")"
+# This is calculated as: /CommunityGalleries/cocopodvm-d0e4f35f-5530-4b9c-8596-112487cdea85/Images/podvm_image0/Versions/$(date -v -1d "+%Y.%m.%d" 2>/dev/null || date -d "yesterday" "+%Y.%m.%d")
+AZURE_IMAGE_ID="/CommunityGalleries/cocopodvm-d0e4f35f-5530-4b9c-8596-112487cdea85/Images/podvm_image0/Versions/2023.10.30"
 AZURE_WORKLOAD_IDENTITY_NAME="caa-identity"
 
 export USER_ASSIGNED_CLIENT_ID="$(az identity show \
@@ -47,6 +48,9 @@ cd $(dirname "$0")
 # Pull the CAA code
 if [ ! -d cloud-api-adaptor ]; then
   git clone https://github.com/confidential-containers/cloud-api-adaptor
+  pushd cloud-api-adaptor
+  git checkout b2b64c3c2de12dc25aa33e503d2036d2aca33204
+  popd
 fi
 
 pushd cloud-api-adaptor

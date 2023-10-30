@@ -6,6 +6,7 @@
 
 ```bash
 export KEY_FILE="$(pwd)/key.bin"
+# NOTE: Key needs to be 32 bytes.
 head -c 32 /dev/urandom | openssl enc >"$KEY_FILE"
 ```
 
