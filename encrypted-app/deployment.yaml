@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: busybox
+  name: busybox-cc
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: busybox
+  template:
+    metadata:
+      labels:
+        app: busybox
+    spec:
+      runtimeClassName: kata-remote
+      containers:
+      - image: $DESTINATION_IMAGE
+        name: busybox
+        command: ["sleep", "infinity"]
