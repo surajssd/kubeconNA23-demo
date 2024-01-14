@@ -15,8 +15,8 @@ head -c 32 /dev/urandom | openssl enc >"$KEY_FILE"
 Here we will use an existing `busybox` image, encrypt it with the previously created key and upload it to a new destination.
 
 ```bash
-export SOURCE_IMAGE=busybox
 export QUAY_USERID=REPLACE_ME
+export SOURCE_IMAGE=busybox
 export DESTINATION_IMAGE=quay.io/${QUAY_USERID}/busybox-encrypted:$(date '+%Y-%m-%b-%d-%H-%M-%S')
 export KEY_ID="default/image-decryption-keys/key.bin"
 make encrypt-image
