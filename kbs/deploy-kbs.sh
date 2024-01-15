@@ -16,7 +16,7 @@ cd $(dirname "$0")
 # Pull the KBS code base if it is not available
 if [ ! -d kbs ]; then
   # TODO: Use the upstream code, once this PR is merged: https://github.com/confidential-containers/kbs/pull/166
-  git clone https://github.com/surajssd/kbs -b k8s-deploy-ingress-install
+  git clone https://github.com/surajssd/kbs -b v0.8.0-ingress-support
 fi
 
 pushd kbs/config/kubernetes
@@ -24,7 +24,9 @@ pushd kbs/config/kubernetes
 # Set the image to use the latest bits from the KBS repository.
 pushd base
 # TODO: Once the coco v0.8.0 is released use that tagged image:
-kustomize edit set image kbs-container-image=quay.io/surajd/kbs:latest
+# This image is built using the following command:
+# docker build --push -t quay.io/surajd/kbs:v0.8.0-ingress-support -f docker/Dockerfile .
+kustomize edit set image kbs-container-image=quay.io/surajd/kbs:v0.8.0-ingress-support
 popd
 
 pushd overlays

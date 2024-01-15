@@ -31,6 +31,7 @@ if ! az aks show --resource-group "${AZURE_RESOURCE_GROUP}" --name "${CLUSTER_NA
         --name "${CLUSTER_NAME}" \
         --location "${AZURE_REGION}" \
         --node-count 1 \
+        --nodepool-labels node.kubernetes.io/worker= \
         --node-vm-size Standard_F4s_v2 \
         --ssh-key-value "${SSH_KEY}" \
         --admin-username "${AKS_WORKER_USER_NAME}" \
